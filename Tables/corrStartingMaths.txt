@@ -1,0 +1,23 @@
+	(1)	(2)
+	maths1	maths2
+VARIABLES	mean_math_score	mean_math_score
+		
+schoolstart	2.054	-0.460
+	(5.095)	(5.078)
+age		-71.30
+		(60.53)
+repeat1		-29.07
+		(41.57)
+grade		13.95
+		(13.18)
+female		-780.3***
+		(268.0)
+relative_age		861.4
+		(4,161)
+Constant	474.1***	2,005**
+	(30.90)	(955.8)
+		
+Observations	100	97
+R-squared	0.002	0.152
+Standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		
