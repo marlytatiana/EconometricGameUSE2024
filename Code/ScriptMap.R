@@ -1,32 +1,51 @@
-# Install and load the necessary packages
-if (!require(ggplot2)) {
-  install.packages("ggplot2")
-  library(ggplot2)
-}
+# Load the necessary package
+library(readr)
+library(text)
+library(googleLanguageR)
 
-if (!require(maps)) {
-  install.packages("maps")
-  library(maps)
-}
-library(tidyverse)
-# Get map data
-world_map <- map_data("world")
+# Install text required python packages in a conda environment (with defaults).
+textrpp_install()
 
-# Plot the map
-ggplot() +
-  geom_polygon(data = world_map, aes(x=long, y = lat, group = group)) +
-  coord_fixed(1.3) +
-  labs(title = "World Map")
+# Initialize the installed conda environment.
+# save_profile = TRUE saves the settings so that you don't have to run textrpp_initialize() after restarting R. 
+textrpp_initialize(save_profile = TRUE)
 
-value <- world_map %>% 
-  select(c("value", "long", "lat"))
 
-# Plot the map with a different projection
+# Set your Google Cloud Translation API key
+Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = file.path("03_code", "lateral-raceway-422112-n7-eaceb5a518c5.json"))
 
-# Plot the map with the heatmap
-ggplot() +
-  geom_polygon(data = world_map, aes(x=long, y = lat, group = group), fill = "lightgray") +
-  geom_tile(data = value, aes(x = long, y = lat, fill = value)) +
-  scale_fill_gradient(low = "blue", high = "red") +
-  coord_quickmap() +
-  labs(title = "Heatmap on World Map")
+
+setwd("C:/Users/6809758/Documents/GitHub/survey-procurers")
+
+# Specify the column types
+col_types <- cols(
+  persistent_id = col_character(),
+  buyer_id = col_character(),
+  buyer_name = col_character(),
+  .default = col_skip()
+)
+
+
+# Specify the locale with the encoding
+locale <- locale(encoding = "UTF-8")  # Replace "UTF-8" with the actual encoding
+
+
+#read_delim(file.path("02_data","01_raw","titl_data_05_12_2021.csv"),delim=";",escape_double = FALSE, trim_ws = TRUE)
+
+# Import the data
+data_all <- read_delim(file.path("02_data","01_raw","titl_data_05_12_2021.csv"),  delim=";", locale= locale)
+
+
+# Select the columns you need
+data <- data_all %>%
+  select(persistent_id, buyer_id, buyer_name)
+
+
+# Translate the buyer_name column from Czech to English
+data$buyer_name_english <- text_translate(data$buyer_name, source = "cs", target = "en")
+
+# Translate the buyer_name column from Czech to English
+data$buyer_name_english <- sapply(data$buyer_name, function(x) {
+  translate_text(x, source = "cs", target = "en")$input
+})
+
